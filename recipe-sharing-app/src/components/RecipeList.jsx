@@ -1,41 +1,42 @@
-import { Link } from "react-router-dom";
-import { useRecipeStore } from "./recipeStore";
+import { Link } from 'react-router-dom'
+import { useRecipeStore } from './recipeStore'
 
-const RecipeList = () => {
-  const recipes = useRecipeStore((state) => state.recipes);
-  const favorites = useRecipeStore((state) => state.favorites);
-  const addFavorite = useRecipeStore((state) => state.addFavorite);
-  const removeFavorite = useRecipeStore((state) => state.removeFavorite);
+export default function RecipeList() {
+  const filteredRecipes = useRecipeStore((s) => s.filteredRecipes)
+  const favorites = useRecipeStore((s) => s.favorites)
+  const addFavorite = useRecipeStore((s) => s.addFavorite)
+  const removeFavorite = useRecipeStore((s) => s.removeFavorite)
+
+  if (!filteredRecipes || filteredRecipes.length === 0) {
+    return <div className="item"><div>No recipes found</div></div>
+  }
 
   return (
-    <div>
-      <h2>Recipes</h2>
-
-      {recipes.map((recipe) => {
-        const isFavorite = favorites.includes(recipe.id);
-
+    <div className="list">
+      {filteredRecipes.map((recipe) => {
+        const isFav = favorites.includes(recipe.id)
         return (
-          <div
-            key={recipe.id}
-            style={{ border: "1px solid #ccc", margin: "5px", padding: "5px" }}
-          >
-            <h3>
-              <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
-            </h3>
-            <p>{recipe.description}</p>
+          <div className="item" key={recipe.id}>
+            <div>
+              <h3 className="itemTitle">{recipe.title}</h3>
+              <p className="itemDesc">{recipe.description}</p>
+              <div className="badgeRow">
+                <span className="badge">{(recipe.ingredients || []).length} ingredients</span>
+                <span className="badge">{recipe.prepTime} min</span>
+                <Link className="link" to={`/recipes/${recipe.id}`}>Open</Link>
+              </div>
+            </div>
 
-            <button
-              onClick={() =>
-                isFavorite ? removeFavorite(recipe.id) : addFavorite(recipe.id)
-              }
-            >
-              {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-            </button>
+            <div className="row">
+              {isFav ? (
+                <button className="btnSecondary" onClick={() => removeFavorite(recipe.id)}>Unfavorite</button>
+              ) : (
+                <button className="btnSecondary" onClick={() => addFavorite(recipe.id)}>Favorite</button>
+              )}
+            </div>
           </div>
-        );
+        )
       })}
     </div>
-  );
-};
-
-export default RecipeList;
+  )
+}

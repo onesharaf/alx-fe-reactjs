@@ -1,50 +1,53 @@
-import { useState } from "react";
-import { useRecipeStore } from "./recipeStore";
+import { useMemo, useState } from 'react'
+import { useRecipeStore } from './recipeStore'
 
-const AddRecipeForm = () => {
-  const addRecipe = useRecipeStore((state) => state.addRecipe);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+export default function AddRecipeForm() {
+  const addRecipe = useRecipeStore((s) => s.addRecipe)
+
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [ingredientsText, setIngredientsText] = useState('')
+  const [prepTime, setPrepTime] = useState('')
+
+  const canSubmit = useMemo(() => title.trim().length > 0 && description.trim().length > 0, [title, description])
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
+    if (!canSubmit) return
 
-    if (!title || !description) return;
+    const ingredients = ingredientsText
+      .split(',')
+      .map((x) => x.trim())
+      .filter((x) => x.length > 0)
 
+    const parsedPrep = Number(prepTime)
     addRecipe({
       id: Date.now(),
-      title,
-      description,
-    });
+      title: title.trim(),
+      description: description.trim(),
+      ingredients,
+      prepTime: Number.isFinite(parsedPrep) ? parsedPrep : 0
+    })
 
-    setTitle("");
-    setDescription("");
-  };
+    setTitle('')
+    setDescription('')
+    setIngredientsText('')
+    setPrepTime('')
+  }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add New Recipe</h2>
-
+    <form className="stack" onSubmit={handleSubmit}>
+      <input className="input" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
+      <textarea className="textarea" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
       <input
+        className="input"
         type="text"
-        value={title}
-        placeholder="Recipe Title"
-        onChange={(e) => setTitle(e.target.value)}
+        value={ingredientsText}
+        onChange={(e) => setIngredientsText(e.target.value)}
+        placeholder="Ingredients (comma separated)"
       />
-
-      <br />
-
-      <textarea
-        value={description}
-        placeholder="Recipe Description"
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <br />
-
-      <button type="submit">Add Recipe</button>
+      <input className="input" type="number" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} placeholder="Prep time (minutes)" />
+      <button className="btn" type="submit" disabled={!canSubmit}>Add Recipe</button>
     </form>
-  );
-};
-
-export default AddRecipeForm;
+  )
+}

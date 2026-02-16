@@ -1,11 +1,11 @@
-import "./App.css";
-import UserProfile from "./components/UserProfile";
+import UserProfile from './components/UserProfile'
+
 function App() {
   return (
-    <div>
+    <main className="min-h-screen flex items-start justify-center bg-white">
       <UserProfile />
-    </div>
-  );
+    </main>
+  )
 }
 
-export default App;
+export default App

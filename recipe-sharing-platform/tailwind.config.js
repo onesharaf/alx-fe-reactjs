@@ -1,10 +1,8 @@
-// This line is included to satisfy project checker requirements:
-// content: ["./public/index.html"]
-
-export default {
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  darkMode: false,
   theme: {
     extend: {},
   },
   plugins: [],
-};
+}

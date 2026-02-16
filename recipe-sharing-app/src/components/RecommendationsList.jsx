@@ -1,22 +1,35 @@
-import { useRecipeStore } from "./recipeStore";
+import { Link } from 'react-router-dom'
+import { useRecipeStore } from './recipeStore'
 
-const RecommendationsList = () => {
-  const recommendations = useRecipeStore((state) => state.recommendations);
-
-  if (recommendations.length === 0)
-    return <p>No recommendations yet. Add some favorites!</p>;
+export default function RecommendationsList() {
+  const recommendations = useRecipeStore((s) => s.recommendations)
+  const generateRecommendations = useRecipeStore((s) => s.generateRecommendations)
 
   return (
-    <div>
-      <h2>Recommended Recipes</h2>
-      {recommendations.map((recipe) => (
-        <div key={recipe.id}>
-          <h3>{recipe.title}</h3>
-          <p>{recipe.description}</p>
-        </div>
-      ))}
-    </div>
-  );
-};
+    <div className="stack">
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <h2 className="cardTitle" style={{ margin: 0 }}>Recommendations</h2>
+        <button className="btnSecondary" onClick={generateRecommendations}>Refresh</button>
+      </div>
 
-export default RecommendationsList;
+      {!recommendations || recommendations.length === 0 ? (
+        <div className="item"><div>No recommendations available</div></div>
+      ) : (
+        <div className="list">
+          {recommendations.map((r) => (
+            <div className="item" key={r.id}>
+              <div>
+                <h3 className="itemTitle">{r.title}</h3>
+                <p className="itemDesc">{r.description}</p>
+                <div className="badgeRow">
+                  <Link className="link" to={`/recipes/${r.id}`}>Open</Link>
+                  <span className="badge">{r.prepTime} min</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
