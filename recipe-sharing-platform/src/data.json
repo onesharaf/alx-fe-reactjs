@@ -1,26 +1,64 @@
 [
   {
-    "id": 1,
+    "id": "1",
     "title": "Spaghetti Carbonara",
     "summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
-    "image": "https://via.placeholder.com/600x400",
-    "ingredients": ["Spaghetti", "Eggs", "Parmesan", "Bacon", "Black pepper", "Salt"],
-    "instructions": "Boil pasta. Cook bacon. Mix eggs and cheese. Combine off heat. Season and serve."
+    "image": "https://via.placeholder.com/300",
+    "ingredients": [
+      "200g spaghetti",
+      "100g bacon",
+      "2 eggs",
+      "50g parmesan",
+      "Salt & black pepper"
+    ],
+    "instructions": [
+      "Boil spaghetti in salted water.",
+      "Fry bacon until crispy.",
+      "Beat eggs and mix with parmesan.",
+      "Combine spaghetti, bacon, and egg mixture.",
+      "Season with black pepper and serve."
+    ]
   },
   {
-    "id": 2,
+    "id": "2",
     "title": "Chicken Tikka Masala",
-    "summary": "Chunks of grilled chicken (tikka) cooked in a smooth buttery & creamy tomato based gravy.",
-    "image": "https://via.placeholder.com/600x400",
-    "ingredients": ["Chicken", "Yogurt", "Spices", "Onion", "Tomato", "Cream", "Salt"],
-    "instructions": "Marinate chicken. Grill. Simmer onion and tomato. Add cream. Add chicken and simmer."
+    "summary": "Chunks of grilled chicken cooked in a smooth buttery & creamy tomato based gravy.",
+    "image": "https://via.placeholder.com/300",
+    "ingredients": [
+      "500g chicken breast",
+      "1 cup yogurt",
+      "2 tbsp tikka masala spice",
+      "1 can tomato puree",
+      "1 onion",
+      "2 cloves garlic",
+      "Salt"
+    ],
+    "instructions": [
+      "Marinate chicken in yogurt and tikka masala spice.",
+      "Grill or pan-fry chicken until cooked.",
+      "Sauté onions and garlic, add tomato puree.",
+      "Add chicken to sauce and simmer.",
+      "Serve hot with rice or naan."
+    ]
   },
   {
-    "id": 3,
-    "title": "Greek Salad",
-    "summary": "A refreshing salad with tomatoes, cucumbers, olives, and feta cheese.",
-    "image": "https://via.placeholder.com/600x400",
-    "ingredients": ["Tomatoes", "Cucumbers", "Olives", "Feta", "Olive oil", "Lemon", "Salt"],
-    "instructions": "Chop vegetables. Combine in a bowl. Add feta. Dress with olive oil and lemon."
+    "id": "3",
+    "title": "Avocado Toast",
+    "summary": "Toasted bread topped with smashed avocado and seasonings.",
+    "image": "https://via.placeholder.com/300",
+    "ingredients": [
+      "2 slices of bread",
+      "1 ripe avocado",
+      "Salt & pepper",
+      "Lemon juice",
+      "Optional toppings: cherry tomatoes, feta"
+    ],
+    "instructions": [
+      "Toast the bread slices.",
+      "Mash avocado with salt, pepper, and lemon juice.",
+      "Spread avocado on toast.",
+      "Add optional toppings.",
+      "Serve immediately."
+    ]
   }
 ]

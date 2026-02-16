@@ -1,62 +1,50 @@
 import { useQuery } from "react-query";
 
-async function fetchPosts() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  if (!res.ok) throw new Error("Failed to fetch posts");
-  return res.json();
-}
+function PostsComponent() {
+  const fetchPosts = async () => {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  };
 
-export default function PostsComponent() {
   const {
     data,
     isLoading,
     isError,
     error,
-    refetch,
-    isFetching
-  } = useQuery(["posts"], fetchPosts, {
-    staleTime: 30000,
-    cacheTime: 300000,
-    refetchOnWindowFocus: false
-  });
+    refetch
+  } = useQuery(
+    "posts",
+    fetchPosts,
+    {
+      cacheTime: 1000 * 60 * 5,          // cache for 5 minutes
+      staleTime: 1000 * 60 * 1,          // fresh for 1 minute
+      refetchOnWindowFocus: false,       // don't refetch on tab switch
+      keepPreviousData: true             // keep old data during refetch
+    }
+  );
+
+  if (isLoading) return <p>Loading posts...</p>;
+  if (isError) return <p>Error: {error.message}</p>;
 
   return (
     <div>
-      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-        <button
-          onClick={() => refetch()}
-          disabled={isFetching}
-          style={{
-            padding: 10,
-            borderRadius: 10,
-            border: 0,
-            background: "#26C281",
-            color: "white",
-            fontWeight: 700,
-            cursor: "pointer"
-          }}
-        >
-          {isFetching ? "Refetching..." : "Refetch Posts"}
-        </button>
+      <h2>Posts</h2>
 
-        <span style={{ opacity: 0.8 }}>
-          {isFetching ? "Updating..." : "Cache enabled (staleTime + cacheTime)"}
-        </span>
-      </div>
+      <button onClick={() => refetch()}>
+        Refetch Posts
+      </button>
 
-      {isLoading && <p>Loading...</p>}
-      {isError && <p style={{ color: "crimson" }}>{error?.message}</p>}
-
-      {Array.isArray(data) && (
-        <ul style={{ marginTop: 16, paddingLeft: 18 }}>
-          {data.slice(0, 10).map((post) => (
-            <li key={post.id} style={{ marginBottom: 10 }}>
-              <b>{post.title}</b>
-              <div style={{ opacity: 0.8 }}>{post.body}</div>
-            </li>
-          ))}
-        </ul>
-      )}
+      {data.slice(0, 10).map((post) => (
+        <div key={post.id}>
+          <h4>{post.title}</h4>
+          <p>{post.body}</p>
+        </div>
+      ))}
     </div>
   );
 }
+
+export default PostsComponent;

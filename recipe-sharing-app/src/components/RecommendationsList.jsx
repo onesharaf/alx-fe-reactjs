@@ -1,35 +1,34 @@
-import { Link } from 'react-router-dom'
-import { useRecipeStore } from './recipeStore'
+import { Link } from 'react-router-dom';
+import { useRecipeStore } from '../store/recipeStore';
 
-export default function RecommendationsList() {
-  const recommendations = useRecipeStore((s) => s.recommendations)
-  const generateRecommendations = useRecipeStore((s) => s.generateRecommendations)
+const RecommendationsList = () => {
+  const recommendations = useRecipeStore(
+    (state) => state.recommendations
+  );
+  const generateRecommendations = useRecipeStore(
+    (state) => state.generateRecommendations
+  );
 
   return (
-    <div className="stack">
-      <div className="row" style={{ justifyContent: 'space-between' }}>
-        <h2 className="cardTitle" style={{ margin: 0 }}>Recommendations</h2>
-        <button className="btnSecondary" onClick={generateRecommendations}>Refresh</button>
-      </div>
+    <div>
+      <h2>Recommended for You</h2>
 
-      {!recommendations || recommendations.length === 0 ? (
-        <div className="item"><div>No recommendations available</div></div>
-      ) : (
-        <div className="list">
-          {recommendations.map((r) => (
-            <div className="item" key={r.id}>
-              <div>
-                <h3 className="itemTitle">{r.title}</h3>
-                <p className="itemDesc">{r.description}</p>
-                <div className="badgeRow">
-                  <Link className="link" to={`/recipes/${r.id}`}>Open</Link>
-                  <span className="badge">{r.prepTime} min</span>
-                </div>
-              </div>
-            </div>
-          ))}
+      <button onClick={generateRecommendations}>
+        Generate Recommendations
+      </button>
+
+      {recommendations.length === 0 && <p>No recommendations yet.</p>}
+
+      {recommendations.map((recipe) => (
+        <div key={recipe.id}>
+          <h3>
+            <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+          </h3>
+          <p>{recipe.description}</p>
         </div>
-      )}
+      ))}
     </div>
-  )
-}
+  );
+};
+
+export default RecommendationsList;

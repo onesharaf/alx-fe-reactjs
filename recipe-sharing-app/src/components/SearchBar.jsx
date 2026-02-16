@@ -1,23 +1,15 @@
-import { useRecipeStore } from './recipeStore'
+import { useRecipeStore } from '../store/recipeStore';
 
-export default function SearchBar() {
-  const searchTerm = useRecipeStore((s) => s.searchTerm)
-  const setSearchTerm = useRecipeStore((s) => s.setSearchTerm)
+const SearchBar = () => {
+  const setSearchTerm = useRecipeStore((state) => state.setSearchTerm);
 
   return (
-    <div className="stack">
-      <input
-        className="input"
-        type="text"
-        placeholder="Search by title, ingredient, or prep time..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <div className="badgeRow">
-        <span className="badge">Title</span>
-        <span className="badge">Ingredients</span>
-        <span className="badge">Prep Time</span>
-      </div>
-    </div>
-  )
-}
+    <input
+      type="text"
+      placeholder="Search recipes..."
+      onChange={(event) => setSearchTerm(event.target.value)}
+    />
+  );
+};
+
+export default SearchBar;
