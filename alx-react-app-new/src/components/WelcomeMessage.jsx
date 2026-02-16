@@ -1,4 +1,4 @@
-function WelcomeMessage(props) {
+function WelcomeMessage() {
     return (
         <div>
             <h1>Hello everyone, I am learning React at ALX!</h1>

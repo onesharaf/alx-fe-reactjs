@@ -1,10 +1,13 @@
-import Search from './components/Search.jsx'
+import Search from "./components/Search";
+import Header from './components/Header';
 
-function App() {
+export default function App() {
+
 
   return (
-    <Search />
-  )
+    <div className="min-h-screen bg-gray-100 p-4">
+      <Header />
+      <Search />
+    </div>
+  );
 }
-
-export default App

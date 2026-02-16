@@ -1,54 +1,34 @@
 import axios from "axios";
 
-const BASE_URL = 'https://api.github.com/users/{username}'
-const API_KEY = 'https://api.github.com/search/users?q={query}'
+const API_BASE_URL = "https://api.github.com";
+const API_KEY = import.meta.env.VITE_GITHUB_API_KEY;
 
+const headers = API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {};
 
-export const fetchUserData = async (username) => {
-  try{
-    const response = await axios.get(
-      `${BASE_URL}/users/${username}`,
-       {
-          headers: API_KEY
-            ? { Authorization: `token ${API_KEY}` }
-            : {},
-       }
-    );
+// Search users
+export const fetchUserData = async ({ username, location, minRepos }) => {
+  let query = "";
+  if (username) query += `${username} in:login`;
+  if (location) query += ` location:${location}`;
+  if (minRepos) query += ` repos:>=${minRepos}`;
 
-    return response.data;
-  } catch (error) {
+  const response = await axios.get(
+    `${API_BASE_URL}/search/users?q=${encodeURIComponent(query)}`,
+    { headers }
+  );
 
-    throw error;
-  }
+  const users = response.data.items;
+
+  // Fetch full info for each user
+  const fullUsers = await Promise.all(
+    users.map(async (u) => {
+      const detail = await axios.get(`${API_BASE_URL}/users/${u.login}`, { headers });
+      return detail.data; // this now includes bio, followers, repos, etc.
+    })
+  );
+
+  return fullUsers;
 };
 
-export const searchUsers = async ({ username, location, minRepos }) => {
-  try {
-    let query = "";
 
-    if (username) {
-      query += `${username}`;
-    }
-
-    if (location) {
-      query += `+location:${location}`;
-    }
-
-    if (minRepos) {
-      query += `+repos:>${minRepos}`;
-    }
-
-    const response = await axios.get(
-      `${BASE_URL}/search/users?q=${query}`,
-      {
-        headers: API_KEY
-          ? { Authorization: `token ${API_KEY}` }
-          : {},
-      }
-    );
-
-    return response.data.items;
-  } catch (error) {
-    throw error;
-  }
-};
+// "https://api.github.com/search/users?q"
