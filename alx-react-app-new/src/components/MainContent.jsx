@@ -1,17 +1,11 @@
-import React from 'react';
-
-const MainContent = () => {
-  return (
-    <main style={{
-      backgroundColor: '#e6f7ff',
-      padding: '20px',
-      margin: '10px',
-      borderRadius: '5px',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <p>I love to visit New York, Paris, and Tokyo.</p>
-    </main>
-  );
-};
+function MainContent() {
+    return (
+        <div style={{ border: '1px solid gray', padding: '10px', margin: '10px' }}>
+            <main style= {{ fontSize: '20px', boxContainer: '0, 20px, rgb 0, 0, 0, 0.2', }}>
+                <p>I love to visit New York, Paris, and Tokyo.</p>
+            </main>
+        </div>
+    );
+}
 
 export default MainContent;

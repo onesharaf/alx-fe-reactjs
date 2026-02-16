@@ -1,19 +1,53 @@
-import React from 'react';
-import Header from './Header';
-import UserProfile from './UserProfile';
-import MainContent from './MainContent';
-import Footer from './Footer';
+ import WelcomeMessage from './components/WelcomeMessage.jsx'
+ import Header from './components/Header.jsx'
+ import MainContent from './components/MainContent.jsx'
+ import Footer from './components/Footer.jsx'
+ import UserProfile from './components/UserProfile.jsx'
+ import Counter from './components/Counter.jsx'
+ 
+
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <div>
-      <MainContent />
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <div>
+      <WelcomeMessage />
       <Header />
-      <UserProfile name="Rufus Christian" age={31} bio="I love playing football and coding." />
-      <Counter />
+      <MainContent />
       <Footer />
-    </div>
-  );
+      <Counter />
+      </div>
+      <div>
+        <UserProfile name="Alice" age="25" bio="Loves hiking and photography" />
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
 
-export default App;
+export default App

@@ -1,22 +1,54 @@
 import axios from "axios";
 
-// Fetch a single user (optional, keeps old function)
+const BASE_URL = 'https://api.github.com/users/{username}'
+const API_KEY = 'https://api.github.com/search/users?q={query}'
+
+
 export const fetchUserData = async (username) => {
-  const response = await axios.get(`https://api.github.com/users/${username}`);
-  return response.data;
+  try{
+    const response = await axios.get(
+      `${BASE_URL}/users/${username}`,
+       {
+          headers: API_KEY
+            ? { Authorization: `token ${API_KEY}` }
+            : {},
+       }
+    );
+
+    return response.data;
+  } catch (error) {
+
+    throw error;
+  }
 };
 
-// Advanced search: username + location + min repos + pagination
-export const searchUsers = async (username, location = "", minRepos = "", page = 1) => {
-  // Build the search query
-  let query = "";
-  if (username) query += username;
-  if (location) query += ` location:${location}`;
-  if (minRepos) query += ` repos:>=${minRepos}`;
+export const searchUsers = async ({ username, location, minRepos }) => {
+  try {
+    let query = "";
 
-  // Autograder expects this exact endpoint string
-  const url = `https://api.github.com/search/users?q=${encodeURIComponent(query)}&page=${page}&per_page=10`;
+    if (username) {
+      query += `${username}`;
+    }
 
-  const response = await axios.get(url);
-  return response.data; // items array is in response.data.items
+    if (location) {
+      query += `+location:${location}`;
+    }
+
+    if (minRepos) {
+      query += `+repos:>${minRepos}`;
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/search/users?q=${query}`,
+      {
+        headers: API_KEY
+          ? { Authorization: `token ${API_KEY}` }
+          : {},
+      }
+    );
+
+    return response.data.items;
+  } catch (error) {
+    throw error;
+  }
 };

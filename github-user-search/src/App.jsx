@@ -1,18 +1,10 @@
-import Search from "./components/Search";
+import Search from './components/Search.jsx'
 
 function App() {
+
   return (
-    <div className="app-container">
-      <h1>GitHub User Search App</h1>
-
-      <h1 className="text-3xl font-bold text-center text-blue-600">
-  Tailwind is working!
-</h1>
-
-
-      <Search />
-    </div>
-  );
+    <Search />
+  )
 }
 
-export default App;
+export default App
