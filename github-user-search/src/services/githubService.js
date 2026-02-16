@@ -1,34 +1,31 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://api.github.com";
-const API_KEY = import.meta.env.VITE_GITHUB_API_KEY;
+const BASE_URL = "https://api.github.com";
+const URL = "https://api.github.com/search/users?q";
 
-const headers = API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {};
-
-// Search users
-export const fetchUserData = async ({ username, location, minRepos }) => {
+// Advanced search function
+export const fetchAdvancedUsers = async ({
+  username,
+  location,
+  minRepos,
+  page = 1,
+}) => {
   let query = "";
-  if (username) query += `${username} in:login`;
+
+  if (username) query += username;
   if (location) query += ` location:${location}`;
   if (minRepos) query += ` repos:>=${minRepos}`;
 
   const response = await axios.get(
-    `${API_BASE_URL}/search/users?q=${encodeURIComponent(query)}`,
-    { headers }
+    `${BASE_URL}/search/users?q=${encodeURIComponent(query)}&page=${page}&per_page=10`,
+    {
+      headers: {
+        Authorization: import.meta.env.VITE_APP_GITHUB_API_KEY
+          ? `token ${import.meta.env.VITE_APP_GITHUB_API_KEY}`
+          : "",
+      },
+    },
   );
 
-  const users = response.data.items;
-
-  // Fetch full info for each user
-  const fullUsers = await Promise.all(
-    users.map(async (u) => {
-      const detail = await axios.get(`${API_BASE_URL}/users/${u.login}`, { headers });
-      return detail.data; // this now includes bio, followers, repos, etc.
-    })
-  );
-
-  return fullUsers;
+  return response.data; // contains `items` array and `total_count`
 };
-
-
-// "https://api.github.com/search/users?q"

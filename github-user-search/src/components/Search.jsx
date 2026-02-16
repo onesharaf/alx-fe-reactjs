@@ -1,151 +1,140 @@
 import { useState } from "react";
-import axios from "axios";
+import { fetchAdvancedUsers } from "../services/githubService";
+import UserCard from "./UserCard";
 
-const API_BASE_URL = "https://api.github.com";
-const API_KEY = import.meta.env.VITE_APP_GITHUB_API_KEY; // optional token for higher rate limit
-const headers = API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {};
+function Search() {
+  const [form, setForm] = useState({
+    username: "",
+    location: "",
+    minRepos: "",
+  });
 
-const Search = () => {
-  const [username, setUsername] = useState("");
-  const [location, setLocation] = useState("");
-  const [minRepos, setMinRepos] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const urlfile = "html_url";
+  // const fetch = "fetchUserData"
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSearch = async (e, newPage = 1) => {
+    e?.preventDefault();
+
+    if (!form.username && !form.location && !form.minRepos) {
+      setError(true);
+      return;
+    }
+
+    if (newPage === 1) setUsers([]);
+
     setLoading(true);
-    setError("");
-    setUsers([]);
+    setError(false);
 
     try {
-      // Build search query
-      let query = "";
-      if (username) query += `${username} in:login`;
-      if (location) query += ` location:${location}`;
-      if (minRepos) query += ` repos:>=${minRepos}`;
+      const data = await fetchAdvancedUsers({ ...form, page: newPage });
 
-      // Search users
-      const searchRes = await axios.get(
-        `${API_BASE_URL}/search/users?q=${encodeURIComponent(query)}`,
-        { headers }
-      );
-
-      const items = searchRes.data.items;
-
-      if (!items || items.length === 0) {
-        throw new Error("Looks like we can't find the user");
+      if (!data.items || data.items.length === 0) {
+        setError(true);
+        setHasMore(false);
+      } else {
+        if (newPage === 1) {
+          setUsers(data.items);
+        } else {
+          setUsers((prev) => [...prev, ...data.items]);
+        }
+        setHasMore(data.items.length === 10);
+        setPage(newPage);
       }
-
-      // Fetch full user info for each result (includes bio)
-      const fullUsers = await Promise.all(
-        items.map(async (u) => {
-          const detail = await axios.get(`${API_BASE_URL}/users/${u.login}`, { headers });
-          return detail.data;
-        })
-      );
-
-      setUsers(fullUsers);
-    } catch (err) {
-      setError(err.message);
+    } catch {
+      setError(true);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-        Advanced GitHub User Search
-      </h2>
+    <div className="mt-8 max-w-3xl mx-auto">
+      {/* 🔍 Search Form */}
+      <form
+        onSubmit={handleSearch}
+        className="bg-gray-100 dark:bg-gray-800 shadow-md rounded-lg p-6 space-y-4"
+      >
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          Advanced GitHub User Search
+        </h2>
 
-      {/* Search Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col">
-          <label htmlFor="username" className="text-sm font-medium text-gray-700 mb-1">
-            GitHub Username
-          </label>
-          <input
-            id="username"
-            type="text"
-            placeholder="e.g. octocat"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={form.username}
+          onChange={handleChange}
+          className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-        <div className="flex flex-col">
-          <label htmlFor="location" className="text-sm font-medium text-gray-700 mb-1">
-            Location
-          </label>
-          <input
-            id="location"
-            type="text"
-            placeholder="e.g. Nigeria"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+        <input
+          type="text"
+          name="location"
+          placeholder="Location (e.g. Ethiopia)"
+          value={form.location}
+          onChange={handleChange}
+          className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-        <div className="flex flex-col">
-          <label htmlFor="minRepos" className="text-sm font-medium text-gray-700 mb-1">
-            Minimum Repositories
-          </label>
-          <input
-            id="minRepos"
-            type="number"
-            placeholder="e.g. 10"
-            value={minRepos}
-            onChange={(e) => setMinRepos(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+        <input
+          type="number"
+          name="minRepos"
+          placeholder="Minimum repositories"
+          value={form.minRepos}
+          onChange={handleChange}
+          className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
         <button
           type="submit"
-          className="mt-4 bg-black text-white py-2 rounded-lg font-bold hover:bg-gray-800 cursor-pointer transition duration-200"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
           Search
         </button>
       </form>
 
-      {/* Loading/Error */}
-      {loading && <p className="mt-4 text-center">Loading...</p>}
-      {error && <p className="mt-4 text-center text-red-500">Looks like we can't find the user</p>}
+      {/* ⏳ Loading */}
+      {loading && (
+        <p className="mt-4 text-center text-gray-700 dark:text-gray-200">
+          Loading...
+        </p>
+      )}
 
-      {/* Users Results */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+      {/* ❌ Error */}
+      {error && (
+        <p className="mt-4 text-center text-red-500">
+          Looks like we cant find the user
+        </p>
+      )}
+
+      {/* 👤 Results */}
+      <div className="mt-6 space-y-4">
         {users.map((user) => (
-          <div
-            key={user.id}
-            className="bg-gray-50 p-4 rounded-lg shadow text-center"
-          >
-            <img
-              src={user.avatar_url}
-              alt={user.login}
-              className="w-20 h-20 rounded-full mx-auto"
-            />
-            <h3 className="mt-2 font-bold">{user.name || user.login}</h3>
-            {user.bio && <p className="text-gray-600 text-sm mt-1">{user.bio}</p>}
-            <p className="text-gray-500 text-sm mt-1">{user.location && user.location}</p>
-            <a
-              href={user.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline mt-2 block"
-            >
-              GitHub Profile
-            </a>
-          </div>
+          <UserCard key={user.id} username={user.login} />
         ))}
       </div>
+
+      {/* ➕ Load More */}
+      {hasMore && !loading && (
+        <button
+          onClick={(e) => handleSearch(e, page + 1)}
+          className="mt-6 w-full bg-gray-800 text-white py-2 rounded hover:bg-gray-900 transition"
+        >
+          Load More
+        </button>
+      )}
     </div>
   );
-};
+}
 
 export default Search;
-
-// fetchUserData
